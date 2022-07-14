@@ -228,4 +228,3 @@ class Program:
     def run(self):
         while self.step() == 0:
             print(self.registers)
-        print(self.registers)
