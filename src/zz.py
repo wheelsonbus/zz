@@ -6,7 +6,8 @@ import program
 
 # TODO: Needs argument handling
 def main(argv):
-    program.run(argv[1])
+    p = program.Program(argv[1])
+    p.run()
 
 
 # Entry point
