@@ -1,13 +1,13 @@
 import sys
 
-import constant
-import program
+from constant import *
+from program import *
 
 
 # TODO: Needs argument handling
 def main(argv):
-    p = program.Program(argv[1])
-    p.run()
+    program = Program(argv[1])
+    program.run()
 
 
 # Entry point
