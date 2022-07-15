@@ -1,5 +1,4 @@
-# zz
-## The sleepy 8-bit computer
+# zz: The Sleepy 8-bit Computer
 A little 8-bit virtual machine lacking sorely in input and output, written in Python.
 
 ## Instructions
