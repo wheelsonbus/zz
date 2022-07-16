@@ -22,7 +22,7 @@ class Program:
         else:
             self.registers[C.R_FL] &= ~flag
 
-    # For the given result of an operation, sets the zero and carry flags, and returns the result kept within a byte
+    # For the given result of an operation, sets the zero and carry flags, and returns the result clamped within a byte
     def operate(self, x):
         self.set_flag(C.FL_Z, False)
         self.set_flag(C.FL_C, False)
@@ -34,6 +34,18 @@ class Program:
             return x % 256
 
         return x
+
+    # Jumps to given address if legal
+    def jump(self, address):
+        if 0 <= address < 256:
+            self.registers[C.R_IP] = address
+        else:
+            self.throw('Attempted to jump to invalid address: ' + address)
+
+    # Throws an error
+    def throw(self, s):
+        print(s)
+        self.set_flag(C.FL_ERR, True)
 
     # Loads contents of file at the given path into memory and resets registers
     # TODO: Needs program data size handling
@@ -220,9 +232,9 @@ class Program:
             # Instruction jump opcodes
             case C.OP_JMP_I:
                 self.inc_ip()
-                self.registers[C.R_IP] = self.at_ip()
+                self.jump(self.at_ip())
 
-        return 0
+        return self.registers[C.R_FL] & C.FL_ERR != 0
 
     # Program entry point: loads then steps through program at a given path
     def run(self):

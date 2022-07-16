@@ -44,3 +44,4 @@ class C:
     # Flag register bits
     FL_Z = 1 << 0
     FL_C = 1 << 1
+    FL_ERR = 1 << 2
