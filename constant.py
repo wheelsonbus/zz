@@ -28,6 +28,13 @@ class C:
     OP_CMP_R_M = 0x19  # ...of register and memory address are equal
     OP_CMP_R_I = 0x1A  # ...of register and immediate are equal
     OP_JMP_I = 0x1B  # Unconditionally jumps to instruction at given address
+    OP_JZ_I = 0x1C  # Jumps if zero flag is true (equal)
+    OP_JNZ_I = 0x1D  # Jumps if zero flag is false (not equal)
+    OP_JC_I = 0x1E  # Jumps if carry flag is true (lower than)
+    OP_JNC_I = 0x1F  # Jumps if carry flag is false (not lower than)
+    OP_JA_I = 0x20  # Jumps if neither carry nor zero flag is true (greater than)
+    OP_JNA_I = 0x21  # Jumps if either carry or zero flag is true (not greater than)
+
     # TODO: Needs conditional jump and stack management operations
     # TODO: Call and return operations?
 

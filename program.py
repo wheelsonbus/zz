@@ -15,6 +15,11 @@ class Program:
     def at_ip(self):
         return self.memory[self.registers[C.R_IP]]
 
+    # Gets bit value of flag register given by 'flag'
+    # TODO: Needs handling for flag input with multiple bits enabled
+    def get_flag(self, flag):
+        return self.registers[C.R_FL] & flag != 0
+
     # For each bit enabled in 'flag', sets the corresponding bit in the flag register to the given value
     def set_flag(self, flag, value):
         if value:
@@ -102,11 +107,13 @@ class Program:
             # Increment and decrement register opcodes
             case C.OP_INC_R:
                 self.inc_ip()
-                self.registers[self.at_ip()] += 1
+                r = self.at_ip()
+                self.registers[r] = self.operate(self.registers[r] + 1)
                 self.inc_ip()
             case C.OP_DEC_R:
                 self.inc_ip()
-                self.registers[self.at_ip()] -= 1
+                r = self.at_ip()
+                self.registers[r] = self.operate(self.registers[r] - 1)
                 self.inc_ip()
 
             # Add to register opcodes
@@ -229,10 +236,46 @@ class Program:
                 self.operate(a - self.at_ip())
                 self.inc_ip()
 
-            # Instruction jump opcodes
+            # Jump opcodes
             case C.OP_JMP_I:
                 self.inc_ip()
                 self.jump(self.at_ip())
+            case C.OP_JZ_I:
+                self.inc_ip()
+                if self.get_flag(C.FL_Z):
+                    self.jump(self.at_ip())
+                else:
+                    self.inc_ip()
+            case C.OP_JNZ_I:
+                self.inc_ip()
+                if not self.get_flag(C.FL_Z):
+                    self.jump(self.at_ip())
+                else:
+                    self.inc_ip()
+            case C.OP_JC_I:
+                self.inc_ip()
+                if self.get_flag(C.FL_C):
+                    self.jump(self.at_ip())
+                else:
+                    self.inc_ip()
+            case C.OP_JNC_I:
+                self.inc_ip()
+                if not self.get_flag(C.FL_C):
+                    self.jump(self.at_ip())
+                else:
+                    self.inc_ip()
+            case C.OP_JA_I:
+                self.inc_ip()
+                if not (self.get_flag(C.FL_Z) or self.get_flag(C.FL_C)):
+                    self.jump(self.at_ip())
+                else:
+                    self.inc_ip()
+            case C.OP_JNA_I:
+                self.inc_ip()
+                if self.get_flag(C.FL_Z) or self.get_flag(C.FL_C):
+                    self.jump(self.at_ip())
+                else:
+                    self.inc_ip()
 
         return self.registers[C.R_FL] & C.FL_ERR != 0
 
