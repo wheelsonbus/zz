@@ -34,7 +34,6 @@ class C:
     OP_JNC_I = 0x1F  # Jumps if carry flag is false (not lower than)
     OP_JA_I = 0x20  # Jumps if neither carry nor zero flag is true (greater than)
     OP_JNA_I = 0x21  # Jumps if either carry or zero flag is true (not greater than)
-
     # TODO: Needs conditional jump and stack management operations
     # TODO: Call and return operations?
 
