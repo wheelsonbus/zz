@@ -4,7 +4,7 @@ from constant import *
 class Program:
     def __init__(self, path):
         self.registers = bytearray(8)
-        self.memory = bytearray(256)
+        self.memory = bytearray(256 * 256)
         self.load(path)
 
     # Increments instruction pointer
@@ -26,6 +26,10 @@ class Program:
             self.registers[C.R_FL] |= flag
         else:
             self.registers[C.R_FL] &= ~flag
+
+    # Returns value at given memory address
+    def fetch(self, x):
+        return self.memory[self.registers[C.R_HA] + x]
 
     # For the given result of an operation, sets the zero and carry flags, and returns the result clamped within a byte
     def operate(self, x):
@@ -55,8 +59,8 @@ class Program:
     # Loads contents of file at the given path into memory and resets registers
     # TODO: Needs program data size handling
     def load(self, path):
-        self.registers = bytearray(7)
-        self.memory = bytearray(256)
+        self.registers = bytearray(8)
+        self.memory = bytearray(256 * 256)
 
         self.registers[C.R_SP] = 0xFF
         with open(path, 'rb') as f:
@@ -83,7 +87,7 @@ class Program:
                 self.inc_ip()
                 d = self.at_ip()
                 self.inc_ip()
-                self.registers[d] = self.memory[self.at_ip()]
+                self.registers[d] = self.fetch(self.at_ip())
                 self.inc_ip()
             case C.OP_MOV_R_I:
                 self.inc_ip()
@@ -95,13 +99,13 @@ class Program:
                 self.inc_ip()
                 d = self.at_ip()
                 self.inc_ip()
-                self.memory[d] = self.registers[self.at_ip()]
+                self.memory[self.registers[C.R_HA] + d] = self.registers[self.at_ip()]
                 self.inc_ip()
             case C.OP_MOV_M_I:
                 self.inc_ip()
                 d = self.at_ip()
                 self.inc_ip()
-                self.memory[d] = self.at_ip()
+                self.memory[self.registers[C.R_HA] + d] = self.at_ip()
                 self.inc_ip()
 
             # Increment and decrement register opcodes
@@ -127,7 +131,7 @@ class Program:
                 self.inc_ip()
                 d = self.at_ip()
                 self.inc_ip()
-                self.registers[d] = self.operate(self.registers[d] + self.memory[self.at_ip()])
+                self.registers[d] = self.operate(self.registers[d] + self.fetch(self.at_ip()))
                 self.inc_ip()
             case C.OP_ADD_R_I:
                 self.inc_ip()
@@ -147,7 +151,7 @@ class Program:
                 self.inc_ip()
                 d = self.at_ip()
                 self.inc_ip()
-                self.registers[d] = self.operate(self.registers[d] - self.memory[self.at_ip()])
+                self.registers[d] = self.operate(self.registers[d] - self.fetch(self.at_ip()))
                 self.inc_ip()
             case C.OP_SUB_R_I:
                 self.inc_ip()
@@ -167,7 +171,7 @@ class Program:
                 self.inc_ip()
                 d = self.at_ip()
                 self.inc_ip()
-                self.registers[d] = self.operate(self.registers[d] & self.memory[self.at_ip()])
+                self.registers[d] = self.operate(self.registers[d] & self.fetch(self.at_ip()))
                 self.inc_ip()
             case C.OP_AND_R_I:
                 self.inc_ip()
@@ -187,7 +191,7 @@ class Program:
                 self.inc_ip()
                 d = self.at_ip()
                 self.inc_ip()
-                self.registers[d] = self.operate(self.registers[d] | self.memory[self.at_ip()])
+                self.registers[d] = self.operate(self.registers[d] | self.fetch(self.at_ip()))
                 self.inc_ip()
             case C.OP_OR_R_I:
                 self.inc_ip()
@@ -207,7 +211,7 @@ class Program:
                 self.inc_ip()
                 d = self.at_ip()
                 self.inc_ip()
-                self.registers[d] = self.operate(self.registers[d] ^ self.memory[self.at_ip()])
+                self.registers[d] = self.operate(self.registers[d] ^ self.fetch(self.at_ip()))
                 self.inc_ip()
             case C.OP_XOR_R_I:
                 self.inc_ip()
@@ -227,7 +231,7 @@ class Program:
                 self.inc_ip()
                 a = self.registers[self.at_ip()]
                 self.inc_ip()
-                self.operate(a - self.memory[self.at_ip()])
+                self.operate(a - self.fetch(self.at_ip()))
                 self.inc_ip()
             case C.OP_CMP_R_I:
                 self.inc_ip()
