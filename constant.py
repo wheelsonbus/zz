@@ -46,7 +46,6 @@ class C:
     R_SP = 0x5
     R_FL = 0x6
     R_HA = 0x7
-    # TODO: Higher address byte register for expanded memory?
 
     # Flag register bits
     FL_Z = 1 << 0

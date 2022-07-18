@@ -1,3 +1,5 @@
+import os
+
 from constant import *
 
 
@@ -55,6 +57,9 @@ class Program:
     def throw(self, s):
         print(s)
         self.set_flag(C.FL_ERR, True)
+
+        for x in range(0xf000, 0x10000):
+            print(self.memory[x], end='')
 
     # Loads contents of file at the given path into memory and resets registers
     # TODO: Needs program data size handling
